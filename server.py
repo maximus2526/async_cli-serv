@@ -1,38 +1,50 @@
-import random
-import socket
-import json
-import ast  # Change str - code literally
+# python3
+import ast  # Change str - code literaly
 import asyncio
-import time
+import sys
 
-server = socket.socket(
-    socket.AF_INET,
-    socket.SOCK_STREAM,
-)
-
-server.bind(("localhost", 5917))
-server.listen(100)
+counter = 0
 
 
-def accept():
-    server.accept()
+async def run_server(host, port):
+    server = await asyncio.start_server(serve_client, host, port)
+    await server.serve_forever()
 
 
-accept()
-while True:
-    data_output = server.recv(1024).decode("utf-8")
-    data_output = ast.literal_eval(data_output)
-    hub_meta = data_output['data'].split('%%')[0].split('&&')
-    device_meta = data_output['data'].split('%%')[1].split('&&')
+async def serve_client(reader, writer):
+    global counter
+    cid = counter
+    counter += 1  # Потоко-безопасно, так все выполняется в одном потоке
+    print(f'Client #{cid} connected')
+    request = await read_request(reader)
+    request = ast.literal_eval(request.decode('utf-8'))
+    print(request)
+    hub_meta = request['data'].split('%%')[0].split('&&')
+    device_meta = request['data'].split('%%')[1].split('&&')
 
     dict_out = {
-        'request_id': data_output['request_id'],
+        'request_id': request['request_id'],
         'data': {
-            hub_meta[0]: {'name': data_output['data'].split('%%')[0].split("&&")[2],
-                          'id': data_output['data'].split('%%')[0].split("&&")[4]},
-            device_meta[0]: {'name': data_output['data'].split('%%')[1].split("&&")[2],
-                             'id': data_output['data'].split('%%')[1].split("&&")[4]},
+            hub_meta[0]: {'name': request['data'].split('%%')[0].split("&&")[2],
+                          'id': request['data'].split('%%')[0].split("&&")[4]},
+            device_meta[0]: {'name': request['data'].split('%%')[1].split("&&")[2],
+                             'id': request['data'].split('%%')[1].split("&&")[4]},
         }
     }
+    await write_response(writer, str(dict_out).encode("utf-8"), cid)
 
-    server.send(str(dict_out).encode('utf-8'))
+
+async def read_request(reader):
+    request = await reader.read(n=-1)
+    return request
+
+
+async def write_response(writer, response, cid):
+    print(response)
+    writer.write(response)
+    writer.close()
+    print(f'Client #{cid} has been served')
+
+
+if __name__ == '__main__':
+    asyncio.run(run_server('127.0.0.1', 5036))

@@ -1,14 +1,11 @@
 import socket
 import ast  # Change str - code literaly
 
-req = '''{
-    "request_id": "01",
-    "data": "Hub&&name&&qwe&&id&&123&&%%Device&&name&&wqe&&id&&234&&"
-}'''
+req = '{ "request_id": "01", "data": "Hub&&name&&qwe&&id&&123&&%%Device&&name&&wqe&&id&&234&&"}'
 
-connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM, proto=0)
 IP = "localhost"
-PORT = 5917
+PORT = 5036
 connection.connect((IP, PORT))
 connection.send(req.encode("utf-8"))
 resp_json = connection.recv(1024)
