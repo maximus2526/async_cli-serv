@@ -1,9 +1,9 @@
 import socket
-import ast  # Change str - code literaly
+import ast  # Change str - code literally
 
 req = '{ "request_id": "01", "data": "Hub&&name&&qwe&&id&&123&&%%Device&&name&&wqe&&id&&234&&"}'
 
-connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM, proto=0)
+connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 IP = "localhost"
 PORT = 5036
 connection.connect((IP, PORT))
