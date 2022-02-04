@@ -1,8 +1,9 @@
+import json
 import socket
 import ast  # Change str - code literally
 
 req = '{ "request_id": "01", "data": "Hub&&name&&qwe&&id&&123&&%%Device&&name&&wqe&&id&&234&&"}'
-
+jsonObj = json.loads(req)
 connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 IP = "localhost"
 PORT = 5036
