@@ -1,5 +1,5 @@
 # python3
-import ast  # Change str - code literaly
+import ast  # Change str - code literally
 import asyncio
 import sys
 
@@ -35,7 +35,8 @@ async def serve_client(reader, writer):
 
 
 async def read_request(reader):
-    request = await reader.read(n=-1)
+    request = await reader.read(100)
+    print("I'm got raquest!")
     return request
 
 
